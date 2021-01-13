@@ -138,13 +138,13 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { defineComponent, PropType, ref, computed, inject, toRefs, Ref, watch } from '@vue/composition-api';
+import { computed, defineComponent, inject, PropType, ref, Ref, toRefs, watch } from '@vue/composition-api';
 
 import { HeaderRaw, Item } from '../../components/v-table/types';
 import { Field, Filter } from '../../types';
 import router from '../../router';
 import useSync from '../../composables/use-sync';
-import { debounce, clone } from 'lodash';
+import { clone, debounce } from 'lodash';
 import Draggable from 'vuedraggable';
 import useCollection from '../../composables/use-collection';
 import useItems from '../../composables/use-items';
@@ -229,6 +229,15 @@ export default defineComponent({
 			filters: _filters,
 			searchQuery: _searchQuery,
 		});
+
+		watch(
+			() => items.value,
+			() => {
+				if (items.value.length === 0 && page.value !== 1) {
+					page.value = 1;
+				}
+			}
+		);
 
 		const {
 			tableSort,
