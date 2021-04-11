@@ -53,6 +53,8 @@ COPY . .
 # Required for Node < 15 (no native workspaces)
 RUN npx lerna link
 
+RUN npm run build
+
 WORKDIR /directus/api
 
 CMD ["sh", "-c", "node ./dist/cli/index.js bootstrap; node ./dist/start.js;"]

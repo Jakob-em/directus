@@ -32,7 +32,7 @@ export default async () => {
 		{
 			title: 'Create Directus Docker Image',
 			task: async (_, task) => {
-				const result = await globby(['**/*', '!node_modules', '!**/node_modules', '!**/src'], {
+				const result = await globby(['**/*', '!node_modules', '!**/node_modules'], {
 					cwd: path.resolve(__dirname, '..', '..'),
 				});
 
