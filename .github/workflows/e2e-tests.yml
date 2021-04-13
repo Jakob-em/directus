@@ -15,10 +15,8 @@ jobs:
         db: ['mssql', 'mysql', 'postgres', 'maria', 'sqlite3']
         node-version: [ '12-alpine', '14-alpine', '15-alpine' ]
     env:
-      CACHED_IMAGE: ghcr.io/${{ github.repository_owner }}/directus-e2e-test-cache:${{ matrix.node-version }}
+      CACHED_IMAGE: ghcr.io/directus/directus-e2e-test-cache:${{ matrix.node-version }}
     steps:
-      - name: Translate image name to lowercase
-        run: echo $CACHED_IMAGE | awk '{print "CACHED_IMAGE="tolower($0)}'  >> $GITHUB_ENV
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -40,9 +38,11 @@ jobs:
             node_modules
             **/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies & Build
+      - name: Install dependencies
         run: |
           npm install
+      - name: Build
+        run: |
           npm run build
       - name: Run tests
         env:
@@ -51,7 +51,7 @@ jobs:
         run: npm run test:e2e
       - name: Push cached image
         # only push the new cache image on the main branch once per node version
-        if: github.ref == 'refs/heads/main' && matrix.db == 'sqlite3'
+        if: github.ref == 'refs/heads/main' && github.repository == 'directus/directus' && matrix.db == 'sqlite3'
         run: |
           docker tag directus-test-image $CACHED_IMAGE
           docker push $CACHED_IMAGE
